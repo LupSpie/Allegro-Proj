@@ -17,17 +17,9 @@ ALLEGRO_DISPLAY* display = nullptr;
 ALLEGRO_EVENT_QUEUE* evnt_queue = nullptr;
 ALLEGRO_BITMAP** bmps = nullptr;
 ALLEGRO_FONT* font = nullptr;
-//ALLEGRO_TIMER* timer = nullptr;
+ALLEGRO_TIMER* timer = nullptr;
 
 const int screenD[2]{ 640, 480 };
-
-
-void start_draws()
-{
-    al_draw_scaled_bitmap(bmps[0], 0, 0, 160, 32, 160, 50, 320, 64, 0);
-    al_draw_text(font, al_map_rgb(255, 255, 255), screenD[0] / 2, screenD[1] / 2, ALLEGRO_ALIGN_CENTRE, "Press A / D");
-    al_flip_display();
-};
 
 // Starter
 int loader()
@@ -43,8 +35,17 @@ int loader()
     display = al_create_display(screenD[0], screenD[1]);
     if (!display) return -1;
 
+    // Creates timer
+    timer = al_create_timer(1.0 / FPS);
+    if (!timer)
+    {
+        al_destroy_timer(timer); 
+        al_destroy_display(display); 
+        return -1;
+    }
+
     // Changes window title name
-    al_set_window_title(display, "Random quotes every update!");
+    al_set_window_title(display, "Wabunga!");
 
     // Creates the bitmaps
     bmps = new ALLEGRO_BITMAP * [50];
@@ -60,12 +61,18 @@ int loader()
     font = al_load_ttf_font("Roboto-Regular.ttf", 15, 0);
 
     // Draws the start stuff idunno
-    start_draws();
+    //start_draws();
 
     // Creates event queue
     evnt_queue = al_create_event_queue();
     al_register_event_source(evnt_queue, al_get_keyboard_event_source());
     al_register_event_source(evnt_queue, al_get_display_event_source(display));
+    al_register_event_source(evnt_queue, al_get_timer_event_source(timer));
+
+    al_clear_to_color(al_map_rgb(0, 0, 0));
+    al_flip_display();
+
+    al_start_timer(timer);
 
     return 1;
 };
@@ -92,20 +99,29 @@ int main(int argc, char** argv) {
 
     while (!wants_quit)
     {
-        //Draws title
-        draw = 1;
-
         ALLEGRO_EVENT evnts;
         al_wait_for_event(evnt_queue, &evnts);
         // Moves Left / Right
+
+        // I'll change these to switches later
         if (evnts.keyboard.keycode == ALLEGRO_KEY_D)
         {
             posx += movex;
-           draw = 1;
+            draw = 1;
         }
         else if (evnts.keyboard.keycode == ALLEGRO_KEY_A)
         {
-            posx += -movex;
+            posx -= movex;
+            draw = 1;
+        }
+        else if (evnts.keyboard.keycode == ALLEGRO_KEY_W)
+        {
+            posy -= movey;
+            draw = 1;
+        }
+        else if (evnts.keyboard.keycode == ALLEGRO_KEY_S)
+        {
+            posy += movey;
             draw = 1;
         }
         else if (evnts.type == ALLEGRO_EVENT_DISPLAY_CLOSE)
@@ -117,11 +133,9 @@ int main(int argc, char** argv) {
         {
             al_clear_to_color(al_map_rgb(0, 0, 0));
             
-            //Re-Draws logo
+            // Draws logo
             al_draw_scaled_bitmap(bmps[0], 0, 0, 160, 32, 160, 50, 320, 64, 0);
-            al_flip_display();
-
-            //Draws the square in posx and posy
+            // Draws the square in posx and posy
             al_draw_bitmap(bmps[1], posx, posy, 0);
             al_flip_display();
 
@@ -130,6 +144,7 @@ int main(int argc, char** argv) {
         }
     }
 
+    al_destroy_timer(timer);
     al_destroy_display(display);
     al_destroy_font(font);
     al_destroy_bitmap(bmps[1]);
