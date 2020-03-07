@@ -6,12 +6,12 @@
 		<br>
 	<img width="160" height="160" src="https://i.imgur.com/0bfygEf.png"> 
 		<br>
-	Temp Logo* Just so it looks nicer** 
-		<br>
-	<p align="center">
-		Hello, I'm lupspie ❤ and this is my first true programming project.
-	</p>
+	Temp Logo* Just so it looks nicer :)
 </h6>
+
+<p align="center">
+	Hello, I'm lupspie ❤ and this is my first true programming project.
+</p>
 
 ---
 
